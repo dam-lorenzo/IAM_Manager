@@ -43,7 +43,7 @@ The database architecture is designed to be scalable and normalized. Below is th
 * **Roles**: Defines specific permissions within each service.
 * **Accesses**: A join table that links a user to a role within a specific service.
 
-### ⚙️ Installation & Running
+## ⚙️ Installation & Running
 
 1. Clone the Repository
 
