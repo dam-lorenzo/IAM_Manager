@@ -1,0 +1,40 @@
+CREATE TABLE users (
+  id SERIAL PRIMARY KEY,
+  full_name VARCHAR(100) NOT NULL,
+  email VARCHAR(150) UNIQUE NOT NULL,
+  active BOOLEAN DEFAULT TRUE,
+  created_at TIMESTAMP DEFAULT NOW()
+);
+
+CREATE TABLE services (
+  id SERIAL PRIMARY KEY,
+  name VARCHAR(100) NOT NULL,
+  description TEXT
+);
+
+CREATE TABLE roles (
+  id SERIAL PRIMARY KEY,
+  service_id INT NOT NULL REFERENCES services(id) ON DELETE CASCADE,
+  name VARCHAR(100) NOT NULL,
+  description TEXT
+);
+
+CREATE TABLE accesses (
+  id SERIAL PRIMARY KEY,
+  user_id INT NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+  service_id INT NOT NULL REFERENCES services(id) ON DELETE CASCADE,
+  role_id INT NOT NULL REFERENCES roles(id) ON DELETE CASCADE,
+  created_at TIMESTAMP DEFAULT NOW(),
+  UNIQUE (user_id, service_id)
+);
+
+
+CREATE UNIQUE INDEX ON accesses (user_id, service_id);
+
+ALTER TABLE roles ADD FOREIGN KEY (service_id) REFERENCES services (id) ON DELETE CASCADE;
+
+ALTER TABLE accesses ADD FOREIGN KEY (user_id) REFERENCES users (id) ON DELETE CASCADE;
+
+ALTER TABLE accesses ADD FOREIGN KEY (service_id) REFERENCES services (id) ON DELETE CASCADE;
+
+ALTER TABLE accesses ADD FOREIGN KEY (role_id) REFERENCES roles (id) ON DELETE CASCADE;

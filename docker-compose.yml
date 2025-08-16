@@ -1,0 +1,47 @@
+version: '3.8'
+
+services:
+  # Sevice of the data base PostgreSQL
+  db:
+    image: postgres:15-alpine
+    container_name: iam_postgres_db
+    restart: always
+    environment:
+      - POSTGRES_USER=myuser
+      - POSTGRES_PASSWORD=mypassword
+      - POSTGRES_DB=iam_db
+    volumes:
+      - postgres_data:/var/lib/postgresql/data/
+    ports:
+      - "5432:5432"
+
+  # Service with backend (API with Python)
+  backend:
+    container_name: iam_backend
+    build: ./backend 
+    restart: always
+    command: uvicorn src.main:app --host 0.0.0.0 --port 8000 --reload
+    volumes:
+      - ./backend:/app
+    ports:
+      - "8000:8000"
+    environment:
+      - DATABASE_URL=postgresql://myuser:mypassword@db:5432/iam_db
+    depends_on:
+      - db 
+
+  #Service Frontend (React)
+  frontend:
+    container_name: iam_frontend
+    build: ./frontend
+    restart: always
+    volumes:
+      - ./frontend:/app
+      - /app/node_modules
+    ports:
+      - "3000:3000"
+    depends_on:
+      - backend
+
+volumes:
+  postgres_data:
