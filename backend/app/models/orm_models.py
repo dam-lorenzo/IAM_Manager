@@ -2,8 +2,9 @@
 
 from datetime import datetime
 from ..extensions import db 
+from . import BaseModel
 
-class User(db.Model):
+class User(db.Model, BaseModel):
     __tablename__ = 'users'
     id = db.Column(db.Integer, primary_key=True)
     full_name = db.Column(db.String(100), nullable=False)
@@ -13,7 +14,7 @@ class User(db.Model):
 
     accesses = db.relationship('Access', back_populates='user', lazy=True, cascade="all, delete-orphan")
 
-class Service(db.Model):
+class Service(db.Model, BaseModel):
     __tablename__ = 'services'
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String(100), unique=True, nullable=False)
@@ -22,7 +23,7 @@ class Service(db.Model):
     roles = db.relationship('Role', back_populates='service', lazy=True, cascade="all, delete-orphan")
     accesses = db.relationship('Access', back_populates='service', lazy=True)
 
-class Role(db.Model):
+class Role(db.Model, BaseModel):
     __tablename__ = 'roles'
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String(100), nullable=False)
@@ -32,7 +33,7 @@ class Role(db.Model):
     service = db.relationship('Service', back_populates='roles')
     accesses = db.relationship('Access', back_populates='role', lazy=True)
 
-class Access(db.Model):
+class Access(db.Model, BaseModel):
     __tablename__ = 'accesses'
     id = db.Column(db.Integer, primary_key=True)
     created_at = db.Column(db.DateTime, default=datetime.utcnow)
