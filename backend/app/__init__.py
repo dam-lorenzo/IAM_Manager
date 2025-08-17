@@ -3,6 +3,8 @@ from flask import Flask, jsonify
 from flask_sqlalchemy import SQLAlchemy
 from dotenv import load_dotenv
 
+from .controllers import all_blueprints
+
 load_dotenv()
 db = SQLAlchemy()
 
@@ -18,8 +20,10 @@ def create_app():
 
     db.init_app(app)
 
-    from . import models
+    for bp in all_blueprints:
+        app.register_blueprint(bp)
 
+        # Rutas globales
     @app.route("/")
     def index():
         return "¡El backend de Flask para IAM Manager está funcionando!"
