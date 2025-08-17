@@ -20,15 +20,16 @@ services:
   # Service with backend (API with Python)
   backend:
     container_name: iam_backend
-    build: ./backend 
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
     restart: always
-    command: uvicorn src.main:app --host 0.0.0.0 --port 8000 --reload
     volumes:
-      - ./backend:/app
+      - .logs:/app/logs
     ports:
-      - "8000:8000"
+      - "5001:5000"
     environment:
-      - DATABASE_URL=postgresql://myuser:mypassword@db:5432/iam_db
+      - DATABASE_URL=${DATABASE_URL}
     depends_on:
       - db 
 
