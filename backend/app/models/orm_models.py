@@ -31,7 +31,8 @@ class Role(db.Model, BaseModel):
     service_id = db.Column(db.Integer, db.ForeignKey('services.id'), nullable=False)
 
     service = db.relationship('Service', back_populates='roles')
-    accesses = db.relationship('Access', back_populates='role', lazy=True)
+    # Automatically deletes related records if a user is deleted
+    accesses = db.relationship('Access', back_populates='role', cascade="all, delete-orphan")
 
 class Access(db.Model, BaseModel):
     __tablename__ = 'accesses'
@@ -44,3 +45,11 @@ class Access(db.Model, BaseModel):
     user = db.relationship('User', back_populates='accesses')
     service = db.relationship('Service', back_populates='accesses')
     role = db.relationship('Role', back_populates='accesses')
+
+    def to_dict(self):
+        return {
+            'id': self.id,
+            'user': self.user.to_dict() if self.user else None,
+            'service': self.service.to_dict() if self.service else None,
+            'role': self.role.to_dict() if self.role else None
+        }
