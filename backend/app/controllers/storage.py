@@ -5,13 +5,13 @@ logger = get_logger()
 
 storage_bp = Blueprint("storage", __name__, url_prefix="/storage")
 
-# GET /api/storage - Obtener todos los usuarios
+# GET /api/storage - Get all users
 @storage_bp.route("/", methods=["GET"])
 def get_users():
     return jsonify([{"id": 1, "username": "prueba", "email": "prueba@prueba.com"}])
 
 
-# GET /api/storage/<id> - Obtener un usuario por ID
+# GET /api/storage/<id> - Get a user by ID
 @storage_bp.route("/<int:user_id>", methods=["GET"])
 def get_user(user_id):
     user = None
@@ -20,7 +20,7 @@ def get_user(user_id):
     return jsonify([{"id": 1, "username": "prueba", "email": "prueba@prueba.com"}])
 
 
-# POST /api/storage - Crear un nuevo usuario
+# POST /api/storage - Create a new user
 @storage_bp.route("/", methods=["POST"])
 def create_user():
     data = request.get_json()
@@ -30,19 +30,9 @@ def create_user():
     return jsonify({"Message": "WIP"}), 201
 
 
-# PUT /api/storage/<id> - Actualizar un usuario
+# PUT /api/storage/<id> - Update a user
 @storage_bp.route("/<int:user_id>", methods=["PUT"])
 def update_user(user_id):
-    data = request.get_json()
-    if not data:
-        return jsonify({"error": "Invalid payload"}), 400
-    logger.debug(data)
-    return jsonify({"Message": "WIP"}), 201
-
-
-# DELETE /api/storage/<id> - Eliminar un usuario
-@storage_bp.route("/<int:user_id>", methods=["DELETE"])
-def delete_user(user_id):
     data = request.get_json()
     if not data:
         return jsonify({"error": "Invalid payload"}), 400
