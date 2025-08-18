@@ -66,6 +66,6 @@ This process will:
 
 📝 Automatically create all required tables by running the schema.sql script on the first launch.
 
-🐍 Launch the Python (FastAPI) backend API.
+🐍 Launch the Python (Flask) backend API.
 
 ⚛️ Launch the React frontend application.
