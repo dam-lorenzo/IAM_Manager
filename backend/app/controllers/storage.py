@@ -1,3 +1,4 @@
+import traceback
 from flask import Blueprint, request, jsonify
 from ..utils.logger import get_logger
 from ..storage.access_dao import access_dao
@@ -7,7 +8,7 @@ logger = get_logger()
 storage_bp = Blueprint("storage", __name__, url_prefix="/storage")
 
 # GET /api/storage - Get all users
-@storage_bp.route("/", methods=["GET"])
+@storage_bp.route("/all", methods=["GET"])
 def get_all_accesses():
     """
     Gets a list of all accesses, with nested information
@@ -26,16 +27,28 @@ def get_all_accesses():
         
     except Exception as e:
         # Basic error handling
-        print(f"Error getting accesses: {e}")
+        logger.error(f"Error getting accesses: {e}")
         return jsonify({"error": "An error occurred on the server"}), 500
 
 # GET /api/storage/<id> - Get a user by ID
-@storage_bp.route("/<int:user_id>", methods=["GET"])
-def get_user(user_id):
-    user = None
-    if not user:
-        return jsonify({"error": "User not found"}), 404
-    return jsonify([{"id": 1, "username": "prueba", "email": "prueba@prueba.com"}])
+@storage_bp.route("search", methods=["GET"])
+def get_user():
+    logger.info('entró a user id')
+    user_id = request.args.get("user_id")
+    try:
+        # 1. Use your DAO to get acces to info from a user by id
+        user_info = access_dao.get_by_id(user_id)
+        # 2. Turning user_info to a dictionary
+        result = [user_info.to_dict()]
+        if not result:
+            return jsonify({"error": "User not found"}), 404
+        # 3. Return user information in JSON format
+        return jsonify(result), 200
+    except Exception as e:
+        # Basic error handling
+        logger.error(f"Error getting accesses: {e}")
+        logger.error(traceback.format_exc())
+        return jsonify({"error": "An error occurred on the server"}), 500
 
 
 # POST /api/storage - Create a new user
