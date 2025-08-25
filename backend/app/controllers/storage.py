@@ -31,25 +31,30 @@ def get_all_accesses():
         logger.error(f"Error getting accesses: {e}")
         return jsonify({"error": "An error occurred on the server"}), 500
 
-# GET /api/storage/<id> - Get a user by ID
-@storage_bp.route("search", methods=["GET"])
-def get_user():
-    logger.info('entró a user id')
-    user_id = request.args.get("user_id")
+# GET /api/storage/<id> - Get access by user ID
+@storage_bp.route("search/<table>", methods=["GET"])
+def get_user(table):
+    logger.debug(f"search/{table}")
     try:
-        # 1. Use your DAO to get acces to info from a user by id
-        user_info = access_dao.get_by_id(user_id)
-        # 2. Turning user_info to a dictionary
-        result = [user_info.to_dict()]
+        match table:
+            case "accesses":
+                info_db = access_dao.get_all(request.args)
+            case "users":
+                info_db = user_dao.get_all(request.args)
+        if isinstance(info_db,list):
+            result = [record.to_dict() for record in info_db]
+        else:
+            result = [info_db.to_dict()]
         if not result:
-            return jsonify({"error": "User not found"}), 404
-        # 3. Return user information in JSON format
+            return jsonify({"Message": "User not found"}), 404
         return jsonify(result), 200
+    except AttributeError as e:
+        return jsonify({"Message": "Bad query parameters"}), 400
     except Exception as e:
         # Basic error handling
         logger.error(f"Error getting accesses: {e}")
         logger.error(traceback.format_exc())
-        return jsonify({"error": "An error occurred on the server"}), 500
+        return jsonify({"Error": "An error occurred on the server"}), 500
 
 
 # POST /api/storage - Create a new user
