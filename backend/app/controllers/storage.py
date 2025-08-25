@@ -2,6 +2,7 @@ import traceback
 from flask import Blueprint, request, jsonify
 from ..utils.logger import get_logger
 from ..storage.access_dao import access_dao
+from ..storage.user_dao import user_dao
 
 logger = get_logger()
 
@@ -52,13 +53,23 @@ def get_user():
 
 
 # POST /api/storage - Create a new user
-@storage_bp.route("/", methods=["POST"])
+@storage_bp.route("/create_user", methods=["POST"])
 def create_user():
-    data = request.get_json()
-    if not data:
-        return jsonify({"error": "Invalid payload"}), 400
-    logger.debug(data)
-    return jsonify({"Message": "WIP"}), 201
+    raw_data = request.get_json()
+    if not raw_data:
+        return jsonify({"Message": "Invalid payload"}), 400
+    logger.debug(raw_data)
+    data = {
+        "full_name": raw_data.get("full_name"),
+        "email": raw_data.get("email")
+    }
+    search_result = user_dao.get_all(filters=data)
+    if search_result:
+        logger.debug("Duplicated user")
+        return jsonify({"Message": "User already exists"}), 409
+    result = user_dao.create(data)
+    logger.debug(result)
+    return jsonify({"Message": "User created"}), 201
 
 
 # PUT /api/storage/<id> - Update a user
