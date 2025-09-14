@@ -37,7 +37,7 @@ def get_all_accesses():
 
 # GET /api/storage/<id> - Get access by user ID
 @storage_bp.route("search/<table>", methods=["GET"])
-def get_user(table):
+def search(table):
     logger.debug(f"search/{table}")
     try:
         match table:
@@ -76,7 +76,7 @@ def create_user():
     try:
         user_data = UserCreate(**raw_data)
     except ValidationError as e:
-        logger.warning(f"Validation error while creating user: {e.errors()}")
+        logger.error(f"Validation error while creating user: {e.errors()}")
         return jsonify({"message": "Validation errors", "errors": e.errors()}), 400
 
     try:
