@@ -102,8 +102,9 @@ def create_user():
 # PUT /api/storage/<id> - Update a user
 @storage_bp.route("/<int:user_id>", methods=["PUT"])
 def update_user(user_id):
-    data = request.get_json()
-    if not data:
-        return jsonify({"error": "Invalid payload"}), 400
-    logger.debug(data)
+    raw_data = request.get_json()
+    if not raw_data:
+        return jsonify({"message": "Request body cannot be empty"}), 400
+    logger.debug(raw_data)
+    update_user_orm =  user_dao.update(raw_data)
     return jsonify({"Message": "WIP"}), 201
