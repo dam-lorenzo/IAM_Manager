@@ -1,10 +1,12 @@
 import traceback
 from flask import Blueprint, request, jsonify
-from ..models.api_models import UserCreate,UserResponse
+from ..models.api_models import UserCreate, UserResponse, UserUpdate, RoleUpdate, ServiceUpdate, AccessUpdate
 from pydantic import ValidationError
 from ..utils.logger import get_logger
 from ..storage.access_dao import access_dao
 from ..storage.user_dao import user_dao
+from ..storage.service_dao import service_dao   
+from ..storage.role_dao import role_dao
 
 logger = get_logger()
 
@@ -99,12 +101,37 @@ def create_user():
         logger.error(f"Unexpected error while creating user: {e}")
         return jsonify({"message": "An error occurred on the server"}), 500
 
-# PUT /api/storage/<id> - Update a user
-@storage_bp.route("/<int:user_id>", methods=["PUT"])
-def update_user(user_id):
+# PUT /api/storage/update_user/<id> - Update a user
+@storage_bp.route("/update/<table>/<int:id>", methods=["PUT"])
+def update_table(table: str, id: int):
     raw_data = request.get_json()
     if not raw_data:
         return jsonify({"message": "Request body cannot be empty"}), 400
     logger.debug(raw_data)
-    update_user_orm =  user_dao.update(raw_data)
-    return jsonify({"Message": "WIP"}), 201
+    try:
+        match table:
+            case "users":
+                payload = UserUpdate(**raw_data)
+                updated = user_dao.update(id, payload.dict(exclude_unset=True))
+            case "services":
+                payload = ServiceUpdate(**raw_data)
+                updated = service_dao.update(id, payload.dict(exclude_unset=True))
+            case "role":
+                payload = RoleUpdate(**raw_data)
+                updated = role_dao.update(id, payload.dict(exclude_unset=True))
+            case "acceses":
+                payload = AccessUpdate(**raw_data)
+                updated = user_dao.update(id, payload.dict(exclude_unset=True))
+            case _:
+                logger.warning(f"Table {table} doesn't exists")
+                return jsonify({"message": "Bad table name"}), 400
+        if updated:
+            logger.info(f"User updated successfully with ID: {id}")
+            return jsonify(updated.to_dict()), 200
+        else:
+            logger.warning(f"User with ID {id} not found")
+            return jsonify({"message": "User not found"}), 404
+    except Exception as e:
+        logger.error(f"Unexpected error while updating user: {str(e)}")
+        return jsonify({"message": "An error occurred with the update"}), 500
+    
