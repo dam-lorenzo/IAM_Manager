@@ -25,7 +25,7 @@ The system is built on a robust and normalized **PostgreSQL** schema, ensuring d
 The repository is organized as a mono-repo with a clear separation between the frontend and backend services.
 
 /
-├── backend/          # Python (FastAPI) Backend Application
+├── backend/          # Python Backend Application
 ├── database/         # Contains the DB schema and migration scripts
 ├── frontend/         # React.js Frontend Application
 ├── docs/             # Documentation and assets like the DB diagram

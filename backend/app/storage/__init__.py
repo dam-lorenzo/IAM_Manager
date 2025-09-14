@@ -37,6 +37,18 @@ class BaseDAO:
             The model instance if found, otherwise None.
         """
         return self.model.query.get(id)
+    
+    def get_by_email(self, email):
+        """
+        Retrieves a record by its email.
+
+        Args:
+            email: email of the record.
+
+        Returns:
+            The model instance if found, otherwise None.
+        """
+        return self.model.query.get(email)
 
     def get_all(self, filters=None):
         """
