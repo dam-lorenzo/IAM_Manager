@@ -24,6 +24,7 @@ CREATE TABLE accesses (
   user_id INT NOT NULL REFERENCES users(id) ON DELETE CASCADE,
   service_id INT NOT NULL REFERENCES services(id) ON DELETE CASCADE,
   role_id INT NOT NULL REFERENCES roles(id) ON DELETE CASCADE,
+  active BOOLEAN DEFAULT TRUE,
   created_at TIMESTAMP DEFAULT NOW(),
   UNIQUE (user_id, service_id)
 );
