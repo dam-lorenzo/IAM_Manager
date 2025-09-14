@@ -101,7 +101,7 @@ def create_user():
         logger.error(f"Unexpected error while creating user: {e}")
         return jsonify({"message": "An error occurred on the server"}), 500
 
-# PUT /api/storage/update_user/<id> - Update a user
+# PUT /api/storage/update/table/<id> - Update table
 @storage_bp.route("/update/<table>/<int:id>", methods=["PUT"])
 def update_table(table: str, id: int):
     raw_data = request.get_json()
@@ -131,6 +131,9 @@ def update_table(table: str, id: int):
         else:
             logger.warning(f"User with ID {id} not found")
             return jsonify({"message": "User not found"}), 404
+    except ValidationError as ve:
+        logger.warning(f"Validation error: {ve.errors()}")
+        return jsonify({"message": "Validation error", "details": ve.errors()}), 422
     except Exception as e:
         logger.error(f"Unexpected error while updating user: {str(e)}")
         return jsonify({"message": "An error occurred with the update"}), 500
