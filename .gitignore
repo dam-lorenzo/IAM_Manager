@@ -13,3 +13,6 @@ logs
 
 # Docker
 docker-compose.override.yml
+
+# Editor
+.vscode
