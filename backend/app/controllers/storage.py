@@ -1,5 +1,6 @@
 import traceback
 from flask import Blueprint, request, jsonify
+from backend.app.storage.service_dao import service_dao
 from ..models.api_models import UserCreate, UserResponse, UserUpdate, RoleUpdate, ServiceUpdate, AccessUpdate
 from pydantic import ValidationError
 from ..utils.logger import get_logger
@@ -7,6 +8,7 @@ from ..storage.access_dao import access_dao
 from ..storage.user_dao import user_dao
 from ..storage.service_dao import service_dao   
 from ..storage.role_dao import role_dao
+from ..utils.storage.storage import create_user, create_service, create_access, create_role
 
 logger = get_logger()
 
@@ -45,6 +47,9 @@ def search(table):
                 info_db = access_dao.get_all(request.args)
             case "users":
                 info_db = user_dao.get_all(request.args)
+            case _:
+                logger.warning(f"Table {table} doesn't exists")
+                return jsonify({"message": "Bad table name"}), 400
         if isinstance(info_db,list):
             result = [record.to_dict() for record in info_db]
         else:
@@ -63,14 +68,28 @@ def search(table):
 
 # POST /api/storage - Create a new user
 
-@storage_bp.route("/create_user", methods=["POST"])
-def create_user():
+@storage_bp.route("/create_resource/<table>", methods=["POST"])
+def create_resource(table: str):
     """
     Creates a new user by validating the input data.
     """
     raw_data = request.get_json()
     if not raw_data:
         return jsonify({"message": "Request body cannot be empty"}), 400
+
+    match table:
+        case "accesses":
+            response = create_access(raw_data)
+        case "users":
+            response = create_user(raw_data)
+        case "services":
+            response = create_service(raw_data)
+        case "role":
+            response = create_role(raw_data)
+        case _:
+            logger.warning(f"Table {table} doesn't exists")
+            return jsonify({"message": "Bad table name"}), 400
+    return response
 
     #Pydantic
     try:
