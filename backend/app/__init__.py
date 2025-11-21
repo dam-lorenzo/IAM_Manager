@@ -1,6 +1,7 @@
 import os
 from flask import Flask, jsonify
 from flask_sqlalchemy import SQLAlchemy
+from flask_cors import CORS
 from dotenv import load_dotenv
 
 from .extensions import db
@@ -10,7 +11,7 @@ load_dotenv()
 
 def create_app():
     app = Flask(__name__)
-    
+    CORS(app)
     db_url = os.getenv("DATABASE_URL")
     if not db_url:
         raise RuntimeError("DATABASE_URL no está configurada.")
