@@ -1,6 +1,5 @@
 import traceback
 from flask import Blueprint, request, jsonify
-from backend.app.storage.service_dao import service_dao
 from ..models.api_models import UserCreate, UserResponse, UserUpdate, RoleUpdate, ServiceUpdate, AccessUpdate
 from pydantic import ValidationError
 from ..utils.logger import get_logger
