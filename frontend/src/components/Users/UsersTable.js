@@ -1,6 +1,6 @@
 // src/components/Users/UsersTable.js
 import React, { useState, useEffect } from 'react';
-
+import { apiGet, apiPut } from '../../apiClient/apiService';
 import {
   Container,
   Typography,
@@ -18,7 +18,7 @@ import {
 
 import EditIcon from '@mui/icons-material/Edit';
 import DeleteIcon from '@mui/icons-material/Delete';
-import { api_search_users } from '../../settings/settings'; 
+import { api_search_users, api_update_users } from '../../settings/settings'; 
 
 function UsersTable() {
   const [users, setUsers] = useState([]);
@@ -26,27 +26,12 @@ function UsersTable() {
   const [error, setError] = useState(null);
 
   useEffect(() => {
-    const fetchUsers = async () => {
-      try { 
-        const response = await fetch(api_search_users);
-        if (!response.ok) {
-            throw new Error(`Error: ${response.status}`);
-        }
-      
-      const data = await response.json();
-      setUsers(data);
-      } catch (err) {
-        setError(err.message);
-      } finally {
-        setLoading(false);
-      }
-    };
-    fetchUsers();
+    apiGet(api_search_users)
   }, []);
 
-  // const handleEdit = (userId) => {
-  //   // Aquí iría la lógica para abrir un modal de edición, por ejemplo
-  // };
+  const handleEdit = (userId) => {
+    apiPut(api_update_users + '/' + userId)
+  };
 
   // const handleDelete = (userId) => {
   //   // Aquí iría la lógica para mostrar una confirmación y eliminar el usuario
@@ -89,7 +74,7 @@ function UsersTable() {
                 <TableCell>{user.name}</TableCell>
                 <TableCell>{user.email}</TableCell>
                 <TableCell align="right">
-                  <IconButton color="primary">
+                  <IconButton color="primary" onClick={handleEdit(user.id)}>
                     <EditIcon />
                   </IconButton>
                   <IconButton color="error">
