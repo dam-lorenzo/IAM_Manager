@@ -6,3 +6,4 @@ psycopg2 == 2.9.10
 colorama == 0.4.6
 pydantic==2.10.6
 pydantic[email]
+flask-cors==6.0.1
