@@ -6,8 +6,11 @@ const roles_table = '/roles'
 const api_base_url = process.env.REACT_APP_API_URL
 const api_base_storage = api_base_url + '/storage'
 const api_search = api_base_storage + '/search'
+//USERS
 const api_search_users = api_search + users_table
+const api_update_users = api_base_storage + '/update'+ users_table 
+//SERVICES
 const api_seach_services = api_search + services_table
 const api_search_roles = api_search + roles_table
 
-export { home, managment, api_search_users }
+export { home, managment, api_search_users, api_update_users}
